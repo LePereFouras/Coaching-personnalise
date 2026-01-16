@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coaching Sportif Interactif V2</title>
+    <title>Coaching Sportif - Semaine</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
-<body class="bg-gray-100 font-sans">
+<body class="bg-gray-50 font-sans">
     <div id="root"></div>
 
     <script type="text/babel">
         const { useState } = React;
 
-        // --- Icônes utilitaires ---
+        // --- Icônes UI (Coches, Flèches) ---
         const IconCheck = ({ size = 24 }) => (
             <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
         );
@@ -26,211 +26,79 @@
             <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
         );
 
-        // --- NOUVELLES ILLUSTRATIONS AMÉLIORÉES ---
-        const ExerciseIllustration = ({ type }) => {
-            // Style commun pour les lignes du corps
-            const bodyStyle = { strokeWidth: 5, strokeLinecap: "round", strokeLinejoin: "round" };
-            const jointRadius = 3.5;
-
-            const illustrations = {
-                // Échauffement Tapis : Personnage dynamique qui marche
+        // --- NOUVELLES ICÔNES PRO (Symboliques) ---
+        // Au lieu de dessiner le mouvement, on utilise des symboles clairs
+        const ExerciseIcon = ({ type }) => {
+            const icons = {
+                // Cardio / Échauffement -> Un coeur qui bat
                 warmup: (
-                    <svg viewBox="0 0 100 100" className="w-28 h-28 mx-auto" fill="none" stroke="#4A90E2">
-                        {/* Tapis incliné */}
-                        <line x1="10" y1="90" x2="90" y2="70" strokeWidth="3" />
-                        {/* Tête */}
-                        <circle cx="55" cy="25" r="6" fill="#4A90E2" stroke="none" />
-                        {/* Torse */}
-                        <line x1="55" y1="31" x2="50" y2="60" {...bodyStyle} />
-                        {/* Jambe avant */}
-                        <polyline points="50 60 65 75 60 85" {...bodyStyle} />
-                        {/* Jambe arrière */}
-                        <polyline points="50 60 35 70 25 75" {...bodyStyle} opacity="0.7" />
-                        {/* Bras avant */}
-                        <polyline points="55 35 70 45 80 40" {...bodyStyle} />
-                        {/* Bras arrière */}
-                        <polyline points="55 35 40 45 30 40" {...bodyStyle} opacity="0.7" />
-                    </svg>
+                    <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 0C1.46 6.7 1.33 10.28 4 13l8 8 8-8c2.67-2.72 2.54-6.3.42-8.42z"></path>
+                            <path d="M3.5 12h6l.5-1 2 4.5 2-7 1.5 3.5h5"></path>
+                        </svg>
+                    </div>
                 ),
-                 // Abductions : Debout, jambe levée sur le côté
-                abductions: (
-                    <svg viewBox="0 0 100 100" className="w-28 h-28 mx-auto" fill="none" stroke="#E74C3C">
-                        {/* Tête */}
-                        <circle cx="50" cy="20" r="6" fill="#E74C3C" stroke="none" />
-                        {/* Torse */}
-                        <line x1="50" y1="26" x2="50" y2="55" {...bodyStyle} />
-                        {/* Jambe d'appui */}
-                        <line x1="50" y1="55" x2="50" y2="90" {...bodyStyle} />
-                        {/* Jambe active levée sur le côté */}
-                        <polyline points="50 55 75 50 85 45" {...bodyStyle} />
-                        {/* Flèche de mouvement */}
-                        <path d="M 60 70 Q 75 65 85 55" stroke="#E74C3C" strokeWidth="2" markerEnd="url(#arrowhead-red)" />
-                        <defs>
-                            <marker id="arrowhead-red" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                            <polygon points="0 0, 10 3.5, 0 7" fill="#E74C3C" />
-                            </marker>
-                        </defs>
-                    </svg>
+                // Musculation (Abductions, Hip Thrust) -> Un haltère
+                strength: (
+                    <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center text-purple-600">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M6.5 6.5h11"></path>
+                            <path d="M6.5 17.5h11"></path>
+                            <path d="M6 20v-5"></path>
+                            <path d="M18 20v-5"></path>
+                            <path d="M6 9V4"></path>
+                            <path d="M18 9V4"></path>
+                            <rect x="2" y="9" width="20" height="6" rx="2"></rect>
+                        </svg>
+                    </div>
                 ),
-                // Hip Thrust : Dos sur banc, hanches levées, barre sur le bassin
-                hipthrust: (
-                    <svg viewBox="0 0 100 100" className="w-28 h-28 mx-auto" fill="none" stroke="#9B59B6">
-                        {/* Banc */}
-                        <rect x="10" y="65" width="40" height="25" fill="#E0E0E0" stroke="none" rx="2"/>
-                        {/* Tête et épaules sur le banc */}
-                        <circle cx="30" cy="60" r="6" fill="#9B59B6" stroke="none" />
-                        <line x1="30" y1="65" x2="55" y2="45" {...bodyStyle} />
-                        {/* Hanches levées (le pont) */}
-                        <polyline points="55 45 80 45 80 90" {...bodyStyle} />
-                        {/* Genou articulation */}
-                        <circle cx="80" cy="45" r={jointRadius} fill="#9B59B6" stroke="none"/>
-                        {/* Barre de poids sur les hanches */}
-                        <line x1="45" y1="40" x2="65" y2="40" strokeWidth="6" stroke="#555" />
-                        <circle cx="45" cy="40" r="5" fill="#333" stroke="none"/>
-                        <circle cx="65" cy="40" r="5" fill="#333" stroke="none"/>
-                        {/* Flèche vers le haut */}
-                        <path d="M 55 70 L 55 55" stroke="#9B59B6" strokeWidth="3" markerEnd="url(#arrowhead-purple)" />
-                         <defs>
-                            <marker id="arrowhead-purple" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                            <polygon points="0 0, 10 3.5, 0 7" fill="#9B59B6" />
-                            </marker>
-                        </defs>
-                    </svg>
+                // Mouvements jambes (Step up, Squat) -> Une jambe/Step
+                leg: (
+                    <div className="w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center text-orange-600">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                             <path d="M4 22h16"></path>
+                             <path d="M9.5 22v-6.5"></path>
+                             <path d="M14.5 22v-6.5"></path>
+                             <rect x="8" y="5" width="8" height="10" rx="1"></rect>
+                             <path d="M8 5h8"></path>
+                        </svg>
+                    </div>
                 ),
-                // Quadriceps (Squat) : Position basse du squat, dos droit, cuisses parallèles
-                quadriceps: (
-                    <svg viewBox="0 0 100 100" className="w-28 h-28 mx-auto" fill="none" stroke="#16A085">
-                        {/* Tête */}
-                        <circle cx="50" cy="25" r="6" fill="#16A085" stroke="none" />
-                        {/* Torse penché en avant mais droit */}
-                        <line x1="50" y1="31" x2="40" y2="60" {...bodyStyle} />
-                        {/* Hanches articulation */}
-                        <circle cx="40" cy="60" r={jointRadius} fill="#16A085" stroke="none"/>
-                        {/* Cuisses parallèles au sol */}
-                        <line x1="40" y1="60" x2="70" y2="60" {...bodyStyle} />
-                        {/* Genoux articulation */}
-                        <circle cx="70" cy="60" r={jointRadius} fill="#16A085" stroke="none"/>
-                        {/* Tibias */}
-                        <line x1="70" y1="60" x2="65" y2="90" {...bodyStyle} />
-                        {/* Bras devant pour l'équilibre */}
-                        <polyline points="48 35 65 45 75 45" {...bodyStyle} strokeWidth="4" />
-                    </svg>
+                // Saut / Explosif -> Éclair ou Flèche
+                jump: (
+                    <div className="w-16 h-16 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                             <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                        </svg>
+                    </div>
                 ),
-                 // Squat Jump : Personnage en extension complète dans les airs
-                squatjump: (
-                    <svg viewBox="0 0 100 100" className="w-28 h-28 mx-auto" fill="none" stroke="#F39C12">
-                        {/* Tête */}
-                        <circle cx="50" cy="15" r="6" fill="#F39C12" stroke="none" />
-                        {/* Torse extension */}
-                        <line x1="50" y1="21" x2="50" y2="50" {...bodyStyle} />
-                        {/* Jambes tendues */}
-                        <line x1="50" y1="50" x2="45" y2="80" {...bodyStyle} />
-                        <line x1="50" y1="50" x2="55" y2="80" {...bodyStyle} />
-                        {/* Pieds pointés */}
-                        <line x1="45" y1="80" x2="42" y2="90" {...bodyStyle} strokeWidth="4" />
-                        <line x1="55" y1="80" x2="58" y2="90" {...bodyStyle} strokeWidth="4" />
-                        {/* Bras lancés vers le haut */}
-                        <line x1="50" y1="25" x2="30" y2="10" {...bodyStyle} />
-                        <line x1="50" y1="25" x2="70" y2="10" {...bodyStyle} />
-                        {/* Lignes de mouvement au sol */}
-                        <path d="M 35 95 Q 50 85 65 95" stroke="#F39C12" strokeWidth="2" opacity="0.6" />
-                         {/* Grande flèche vers le haut */}
-                        <path d="M 80 70 L 80 30" stroke="#F39C12" strokeWidth="3" markerEnd="url(#arrowhead-orange)" />
-                         <defs>
-                            <marker id="arrowhead-orange" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                            <polygon points="0 0, 10 3.5, 0 7" fill="#F39C12" />
-                            </marker>
-                        </defs>
-                    </svg>
-                ),
-                // Kick Back : Penché, jambe tendue en arrière avec câble
-                kickback: (
-                    <svg viewBox="0 0 100 100" className="w-28 h-28 mx-auto" fill="none" stroke="#E67E22">
-                        {/* Support pour les mains */}
-                        <rect x="10" y="40" width="10" height="50" fill="#E0E0E0" stroke="none" rx="2"/>
-                        {/* Tête */}
-                        <circle cx="35" cy="35" r="6" fill="#E67E22" stroke="none" />
-                        {/* Torse penché à l'horizontale */}
-                        <line x1="35" y1="41" x2="60" y2="45" {...bodyStyle} />
-                        {/* Bras tenant le support */}
-                        <line x1="35" y1="41" x2="20" y2="45" {...bodyStyle} />
-                        {/* Jambe d'appui fléchie */}
-                        <polyline points="60 45 55 70 50 90" {...bodyStyle} />
-                        {/* Jambe active tendue en arrière et vers le haut */}
-                        <line x1="60" y1="45" x2="90" y2="35" {...bodyStyle} />
-                        {/* Câble de la poulie attaché à la cheville */}
-                        <line x1="90" y1="35" x2="90" y2="90" stroke="#555" strokeWidth="2" strokeDasharray="4 2" />
-                        <rect x="85" y="88" width="10" height="4" fill="#333" stroke="none" />
-                    </svg>
-                ),
-                 // Step Up : Un pied sur la boîte, l'autre en train de monter
-                stepup: (
-                    <svg viewBox="0 0 100 100" className="w-28 h-28 mx-auto" fill="none" stroke="#27AE60">
-                        {/* La boîte / Step */}
-                        <rect x="55" y="60" width="35" height="30" fill="#E0E0E0" stroke="none" rx="2" />
-                        {/* Tête */}
-                        <circle cx="50" cy="20" r="6" fill="#27AE60" stroke="none" />
-                        {/* Torse */}
-                        <line x1="50" y1="26" x2="50" y2="55" {...bodyStyle} />
-                        {/* Jambe avant sur le step (fléchie) */}
-                        <polyline points="50 55 70 50 70 60" {...bodyStyle} />
-                        {/* Jambe arrière au sol (tendue, prête à pousser) */}
-                        <line x1="50" y1="55" x2="35" y2="90" {...bodyStyle} />
-                        {/* Flèche de montée sur la jambe avant */}
-                         <path d="M 70 40 L 70 25" stroke="#27AE60" strokeWidth="3" markerEnd="url(#arrowhead-green)" />
-                         <defs>
-                            <marker id="arrowhead-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                            <polygon points="0 0, 10 3.5, 0 7" fill="#27AE60" />
-                            </marker>
-                        </defs>
-                    </svg>
-                ),
-                // Fente Bulgare : Position basse, pied arrière sur banc, genou avant plié à 90°
-                bulgare: (
-                    <svg viewBox="0 0 100 100" className="w-28 h-28 mx-auto" fill="none" stroke="#C0392B">
-                        {/* Banc arrière */}
-                        <rect x="10" y="55" width="30" height="35" fill="#E0E0E0" stroke="none" rx="2" />
-                        {/* Tête */}
-                        <circle cx="65" cy="25" r="6" fill="#C0392B" stroke="none" />
-                        {/* Torse droit */}
-                        <line x1="65" y1="31" x2="65" y2="60" {...bodyStyle} />
-                        {/* Hanches articulation */}
-                        <circle cx="65" cy="60" r={jointRadius} fill="#C0392B" stroke="none"/>
-                        {/* Jambe avant (fente profonde à 90 degrés) */}
-                        <polyline points="65 60 90 60 90 90" {...bodyStyle} />
-                        {/* Genou avant articulation */}
-                        <circle cx="90" cy="60" r={jointRadius} fill="#C0392B" stroke="none"/>
-                        {/* Jambe arrière posée sur le banc */}
-                        <polyline points="65 60 40 65 25 55" {...bodyStyle} />
-                        {/* Poids dans les mains */}
-                        <line x1="65" y1="35" x2="65" y2="65" {...bodyStyle} strokeWidth="4" opacity="0.6" />
-                        <circle cx="65" cy="65" r="4" fill="#555" stroke="none"/>
-                    </svg>
-                ),
-                // Cardio Escalier : Personnage montant des marches
-                cardio: (
-                    <svg viewBox="0 0 100 100" className="w-28 h-28 mx-auto" fill="none" stroke="#E74C3C">
-                        {/* Les marches d'escalier */}
-                        <polyline points="10 90 30 90 30 70 50 70 50 50 70 50 70 30" stroke="#E0E0E0" strokeWidth="4" strokeLinejoin="miter" />
-                        {/* Tête */}
-                        <circle cx="45" cy="30" r="6" fill="#E74C3C" stroke="none" />
-                        {/* Torse légèrement penché */}
-                        <line x1="45" y1="36" x2="40" y2="60" {...bodyStyle} />
-                        {/* Jambe haute sur une marche */}
-                        <polyline points="40 60 55 50 55 60" {...bodyStyle} />
-                        {/* Jambe basse sur une autre marche */}
-                        <polyline points="40 60 30 70 30 80" {...bodyStyle} />
-                        {/* Bras en mouvement de marche */}
-                        <polyline points="45 40 60 45 65 35" {...bodyStyle} />
-                        <polyline points="45 40 30 45 25 35" {...bodyStyle} opacity="0.7" />
-                    </svg>
-                ),
+                // Fin cardio -> Chronomètre
+                timer: (
+                    <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center text-red-600">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </div>
+                )
             };
 
-            return illustrations[type] || illustrations.warmup;
-        };
-        // --- FIN DES NOUVELLES ILLUSTRATIONS ---
+            // Mapping des exercices vers les icônes
+            const mapping = {
+                'warmup': icons.warmup,
+                'abductions': icons.strength,
+                'hipthrust': icons.strength,
+                'quadriceps': icons.leg,
+                'squatjump': icons.jump,
+                'kickback': icons.leg,
+                'stepup': icons.leg,
+                'bulgare': icons.strength,
+                'cardio': icons.timer
+            };
 
+            return mapping[type] || icons.strength;
+        };
 
         const CoachingSportif = () => {
             const [completedExercises, setCompletedExercises] = useState({});
@@ -243,7 +111,7 @@
                 }));
             };
 
-            // --- DONNÉES DU COACHING (Inchangées) ---
+            // Données Jour 1
             const jour1 = {
                 title: "JOUR 1 - Mardi",
                 exercises: [
@@ -279,11 +147,11 @@
                     {
                         id: 'quadriceps',
                         type: 'quadriceps',
-                        name: "3️⃣ Quadriceps (Squat)",
+                        name: "3️⃣ Quadriceps",
                         details: [
                             "Position correcte (dos droit, genoux alignés)",
                             "4 séries de 10 répétitions",
-                            "À la 9ᵉ répétition : bloque en bas 5 secondes + 1 répétition supplémentaire",
+                            "À la 9ᵉ répétition : bloque en haut 5 secondes + 1 répétition supplémentaire",
                             "Enchaîne directement avec Squat Jump"
                         ]
                     },
@@ -326,6 +194,7 @@
                 ]
             };
 
+            // Données Jour 2
             const jour2 = {
                 title: "JOUR 2 - Vendredi",
                 exercises: [
@@ -400,7 +269,6 @@
                     }
                 ]
             };
-            // --- FIN DES DONNÉES ---
 
             const renderDay = (day, dayData) => {
                 const isExpanded = expandedDay === day;
@@ -431,43 +299,45 @@
                                     return (
                                         <div
                                             key={exercise.id}
-                                            className={`border-2 rounded-xl p-4 md:p-5 transition-all duration-300 shadow-sm hover:shadow-md ${
+                                            className={`relative border-2 rounded-xl p-5 transition-all duration-300 shadow-sm hover:shadow-md ${
                                                 isCompleted
                                                     ? 'border-green-400 bg-green-50/50'
                                                     : 'border-white bg-white hover:border-purple-200'
                                             }`}
                                         >
-                                            <div className="flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-6">
-                                                {/* Illustration du bonhomme (Conteneur ajusté) */}
-                                                <div className="flex-shrink-0 p-2 bg-white rounded-lg border border-gray-100 shadow-inner">
-                                                    <ExerciseIllustration type={exercise.type} />
+                                            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
+                                                {/* Icône de l'exercice */}
+                                                <div className="flex-shrink-0">
+                                                    <ExerciseIcon type={exercise.type} />
                                                 </div>
                                                 
-                                                <div className="flex-1 w-full">
-                                                    <div className="flex justify-between items-start mb-3">
-                                                        <h3 className={`text-xl font-bold ${isCompleted ? 'text-green-800' : 'text-gray-800'}`}>
+                                                <div className="flex-1 w-full text-left">
+                                                    <div className="flex justify-between items-start mb-2">
+                                                        <h3 className={`text-lg sm:text-xl font-bold ${isCompleted ? 'text-green-800' : 'text-gray-800'}`}>
                                                             {exercise.name}
                                                         </h3>
                                                         <button
                                                             onClick={() => toggleExercise(day, exercise.id)}
-                                                            className={`flex-shrink-0 w-12 h-12 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all shadow-sm ${
+                                                            className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-sm ml-2 ${
                                                                 isCompleted
                                                                     ? 'bg-green-500 text-white scale-110'
                                                                     : 'bg-gray-100 text-gray-400 hover:bg-purple-100 hover:text-purple-600'
                                                             }`}
                                                         >
-                                                            <IconCheck size={24} />
+                                                            <IconCheck size={20} />
                                                         </button>
                                                     </div>
                                                     
-                                                    <ul className="space-y-2 bg-white/50 rounded-lg p-3">
-                                                        {exercise.details.map((detail, idx) => (
-                                                            <li key={idx} className="flex items-start gap-2 text-gray-700 text-sm md:text-base">
-                                                                <span className="text-purple-600 mt-1.5 min-w-[6px] h-[6px] rounded-full bg-purple-600 block"></span>
-                                                                <span>{detail}</span>
-                                                            </li>
-                                                        ))}
-                                                    </ul>
+                                                    <div className="bg-white/60 rounded-lg p-3 border border-gray-100">
+                                                        <ul className="space-y-2">
+                                                            {exercise.details.map((detail, idx) => (
+                                                                <li key={idx} className="flex items-start gap-2 text-gray-700 text-sm font-medium">
+                                                                    <span className="text-purple-500 mt-1.5 min-w-[6px] h-[6px] rounded-full bg-purple-500 block"></span>
+                                                                    <span>{detail}</span>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -480,35 +350,37 @@
             };
 
             return (
-                <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 p-3 md:p-8">
-                    <div className="max-w-4xl mx-auto">
-                        <div className="text-center mb-10 mt-4 md:mt-0">
-                            <h1 className="text-3xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 mb-4 drop-shadow-sm">
-                                Programme Coaching
+                <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 p-4 font-sans">
+                    <div className="max-w-3xl mx-auto">
+                        <div className="text-center mb-8 pt-6">
+                            <h1 className="text-3xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 mb-2">
+                                Coaching Sportif
                             </h1>
-                            <p className="text-gray-600 text-lg font-medium">Semaine d’entraînement - Fessiers & Jambes</p>
+                            <p className="text-gray-500 font-medium">Semaine d’entraînement - Fessiers & Jambes</p>
                         </div>
 
-                        <div className="bg-yellow-50 border-l-4 border-yellow-400 rounded-r-xl p-4 md:p-6 mb-10 shadow-sm">
-                            <h3 className="font-bold text-yellow-800 mb-3 text-lg flex items-center gap-2">
+                        {/* --- Boîte de consignes mise à jour --- */}
+                        <div className="bg-amber-50 border-l-4 border-amber-400 rounded-r-lg p-5 mb-8 shadow-sm">
+                            <h3 className="font-bold text-amber-800 mb-3 flex items-center gap-2">
                                 <span>⚠️</span> Consignes importantes :
                             </h3>
-                            <ul className="space-y-2 text-yellow-900/90 font-medium text-sm md:text-base">
+                            <ul className="space-y-2 text-amber-900/80 font-medium text-sm">
                                 <li className="flex items-center gap-2">• 1 min 30 de repos entre chaque série</li>
                                 <li className="flex items-center gap-2">• Entraînement : Mardi et Vendredi (récupération musculaire)</li>
                                 <li className="flex items-center gap-2">• Ne fais pas trop de cardio : risque de perdre du muscle</li>
-                                <li className="flex items-center gap-2">• Finis toujours par le cardio sur ces séances</li>
+                                <li className="flex items-center gap-2">• Finis toujours par le cardio sur <strong>tes</strong> séances</li>
+                                <li className="flex items-center gap-2 font-bold">• 💧 Bois beaucoup d'eau avant, pendant et après !</li>
                             </ul>
                         </div>
 
-                        <div className="space-y-8">
+                        <div className="space-y-6">
                             {renderDay('jour1', jour1)}
                             {renderDay('jour2', jour2)}
                         </div>
 
-                        <div className="mt-12 text-center pb-8">
-                            <p className="text-gray-500 font-medium text-sm">
-                                💪 Bonne séance ! Reste motivée et écoute ton corps.
+                        <div className="mt-12 text-center pb-10">
+                            <p className="text-gray-400 font-medium text-sm">
+                                💪 Bonne séance ! Reste motivée.
                             </p>
                         </div>
                     </div>
