@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coaching Sportif Interactif</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="bg-gray-100">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        // --- Icônes remplacant Lucide-React pour cette version HTML ---
+        const IconCheck = ({ size = 24 }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        );
+        const IconChevronDown = ({ size = 24 }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        );
+        const IconChevronUp = ({ size = 24 }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+        );
+
+        // --- Composant des petits bonhommes (Illustrations) ---
+        const ExerciseIllustration = ({ type }) => {
+            const illustrations = {
+                warmup: (
+                    <svg viewBox="0 0 100 120" className="w-24 h-24 mx-auto">
+                        <circle cx="50" cy="20" r="8" fill="#4A90E2" />
+                        <line x1="50" y1="28" x2="50" y2="60" stroke="#4A90E2" strokeWidth="3" />
+                        <line x1="50" y1="35" x2="35" y2="50" stroke="#4A90E2" strokeWidth="3" />
+                        <line x1="50" y1="35" x2="65" y2="50" stroke="#4A90E2" strokeWidth="3" />
+                        <line x1="50" y1="60" x2="35" y2="85" stroke="#4A90E2" strokeWidth="3" />
+                        <line x1="50" y1="60" x2="65" y2="85" stroke="#4A90E2" strokeWidth="3" />
+                        <path d="M 30 95 Q 35 100 40 95" stroke="#4A90E2" strokeWidth="2" fill="none" />
+                    </svg>
+                ),
+                abductions: (
+                    <svg viewBox="0 0 100 120" className="w-24 h-24 mx-auto">
+                        <circle cx="50" cy="15" r="7" fill="#E74C3C" />
+                        <line x1="50" y1="22" x2="45" y2="45" stroke="#E74C3C" strokeWidth="3" />
+                        <line x1="45" y1="30" x2="30" y2="35" stroke="#E74C3C" strokeWidth="3" />
+                        <line x1="45" y1="30" x2="60" y2="35" stroke="#E74C3C" strokeWidth="3" />
+                        <line x1="45" y1="45" x2="30" y2="70" stroke="#E74C3C" strokeWidth="3" />
+                        <line x1="45" y1="45" x2="70" y2="70" stroke="#E74C3C" strokeWidth="3" />
+                        <rect x="25" y="30" width="15" height="8" fill="#95A5A6" rx="2" />
+                    </svg>
+                ),
+                hipthrust: (
+                    <svg viewBox="0 0 100 120" className="w-24 h-24 mx-auto">
+                        <circle cx="30" cy="45" r="7" fill="#9B59B6" />
+                        <line x1="35" y1="48" x2="70" y2="48" stroke="#9B59B6" strokeWidth="3" />
+                        <line x1="40" y1="48" x2="35" y2="60" stroke="#9B59B6" strokeWidth="3" />
+                        <line x1="40" y1="48" x2="45" y2="35" stroke="#9B59B6" strokeWidth="3" />
+                        <line x1="70" y1="48" x2="65" y2="65" stroke="#9B59B6" strokeWidth="3" />
+                        <line x1="70" y1="48" x2="75" y2="65" stroke="#9B59B6" strokeWidth="3" />
+                        <rect x="45" y="65" width="30" height="8" fill="#95A5A6" rx="2" />
+                    </svg>
+                ),
+                quadriceps: (
+                    <svg viewBox="0 0 100 120" className="w-24 h-24 mx-auto">
+                        <circle cx="50" cy="20" r="7" fill="#16A085" />
+                        <line x1="50" y1="27" x2="50" y2="55" stroke="#16A085" strokeWidth="3" />
+                        <line x1="50" y1="35" x2="38" y2="45" stroke="#16A085" strokeWidth="3" />
+                        <line x1="50" y1="35" x2="62" y2="45" stroke="#16A085" strokeWidth="3" />
+                        <line x1="50" y1="55" x2="45" y2="75" stroke="#16A085" strokeWidth="3" />
+                        <line x1="50" y1="55" x2="55" y2="75" stroke="#16A085" strokeWidth="3" />
+                        <line x1="45" y1="75" x2="40" y2="90" stroke="#16A085" strokeWidth="3" />
+                        <line x1="55" y1="75" x2="60" y2="90" stroke="#16A085" strokeWidth="3" />
+                        <rect x="35" y="70" width="30" height="8" fill="#95A5A6" rx="2" />
+                    </svg>
+                ),
+                squatjump: (
+                    <svg viewBox="0 0 100 120" className="w-24 h-24 mx-auto">
+                        <circle cx="50" cy="15" r="7" fill="#F39C12" />
+                        <line x1="50" y1="22" x2="50" y2="45" stroke="#F39C12" strokeWidth="3" />
+                        <line x1="50" y1="28" x2="38" y2="20" stroke="#F39C12" strokeWidth="3" />
+                        <line x1="50" y1="28" x2="62" y2="20" stroke="#F39C12" strokeWidth="3" />
+                        <line x1="50" y1="45" x2="42" y2="60" stroke="#F39C12" strokeWidth="3" />
+                        <line x1="50" y1="45" x2="58" y2="60" stroke="#F39C12" strokeWidth="3" />
+                        <path d="M 45 70 L 50 75 L 55 70" stroke="#F39C12" strokeWidth="2" fill="none" />
+                        <text x="50" y="90" textAnchor="middle" fill="#F39C12" fontSize="12">↑</text>
+                    </svg>
+                ),
+                kickback: (
+                    <svg viewBox="0 0 100 120" className="w-24 h-24 mx-auto">
+                        <circle cx="35" cy="30" r="7" fill="#E67E22" />
+                        <line x1="38" y1="35" x2="55" y2="50" stroke="#E67E22" strokeWidth="3" />
+                        <line x1="42" y1="40" x2="30" y2="48" stroke="#E67E22" strokeWidth="3" />
+                        <line x1="42" y1="40" x2="50" y2="35" stroke="#E67E22" strokeWidth="3" />
+                        <line x1="55" y1="50" x2="50" y2="68" stroke="#E67E22" strokeWidth="3" />
+                        <line x1="55" y1="50" x2="75" y2="45" stroke="#E67E22" strokeWidth="3" />
+                        <rect x="20" y="65" width="20" height="6" fill="#95A5A6" rx="2" />
+                    </svg>
+                ),
+                stepup: (
+                    <svg viewBox="0 0 100 120" className="w-24 h-24 mx-auto">
+                        <circle cx="50" cy="20" r="7" fill="#27AE60" />
+                        <line x1="50" y1="27" x2="50" y2="50" stroke="#27AE60" strokeWidth="3" />
+                        <line x1="50" y1="35" x2="38" y2="42" stroke="#27AE60" strokeWidth="3" />
+                        <line x1="50" y1="35" x2="62" y2="42" stroke="#27AE60" strokeWidth="3" />
+                        <line x1="50" y1="50" x2="45" y2="68" stroke="#27AE60" strokeWidth="3" />
+                        <line x1="50" y1="50" x2="58" y2="75" stroke="#27AE60" strokeWidth="3" />
+                        <rect x="50" y="75" width="25" height="10" fill="#95A5A6" rx="2" />
+                    </svg>
+                ),
+                bulgare: (
+                    <svg viewBox="0 0 100 120" className="w-24 h-24 mx-auto">
+                        <circle cx="45" cy="20" r="7" fill="#C0392B" />
+                        <line x1="45" y1="27" x2="42" y2="50" stroke="#C0392B" strokeWidth="3" />
+                        <line x1="45" y1="35" x2="33" y2="42" stroke="#C0392B" strokeWidth="3" />
+                        <line x1="45" y1="35" x2="57" y2="42" stroke="#C0392B" strokeWidth="3" />
+                        <line x1="42" y1="50" x2="35" y2="75" stroke="#C0392B" strokeWidth="3" />
+                        <line x1="42" y1="50" x2="55" y2="65" stroke="#C0392B" strokeWidth="3" />
+                        <rect x="50" y="65" width="20" height="8" fill="#95A5A6" rx="2" />
+                    </svg>
+                ),
+                cardio: (
+                    <svg viewBox="0 0 100 120" className="w-24 h-24 mx-auto">
+                        <circle cx="50" cy="20" r="8" fill="#E74C3C" />
+                        <line x1="50" y1="28" x2="50" y2="55" stroke="#E74C3C" strokeWidth="3" />
+                        <line x1="50" y1="35" x2="35" y2="48" stroke="#E74C3C" strokeWidth="3" />
+                        <line x1="50" y1="35" x2="65" y2="48" stroke="#E74C3C" strokeWidth="3" />
+                        <line x1="50" y1="55" x2="38" y2="80" stroke="#E74C3C" strokeWidth="3" />
+                        <line x1="50" y1="55" x2="62" y2="80" stroke="#E74C3C" strokeWidth="3" />
+                        <path d="M 60 15 Q 65 10 70 15 Q 75 20 70 25 L 60 35 L 50 25 Q 45 20 50 15 Q 55 10 60 15" fill="#E74C3C" />
+                    </svg>
+                ),
+            };
+
+            return illustrations[type] || illustrations.warmup;
+        };
+
+        const CoachingSportif = () => {
+            const [completedExercises, setCompletedExercises] = useState({});
+            const [expandedDay, setExpandedDay] = useState('jour1');
+
+            const toggleExercise = (day, exerciseId) => {
+                setCompletedExercises(prev => ({
+                    ...prev,
+                    [`${day}-${exerciseId}`]: !prev[`${day}-${exerciseId}`]
+                }));
+            };
+
+            const jour1 = {
+                title: "JOUR 1 - Mardi",
+                exercises: [
+                    {
+                        id: 'warmup1',
+                        type: 'warmup',
+                        name: "Échauffement – Cardio léger",
+                        details: ["10 minutes sur tapis à une pente de 15", "Objectif : échauffer tous les muscles"]
+                    },
+                    {
+                        id: 'abductions',
+                        type: 'abductions',
+                        name: "1️⃣ Abductions – Jambes / Fessiers",
+                        details: [
+                            "Place ton fessier bien vers l’arrière",
+                            "Penche-toi légèrement vers l’avant, dos droit",
+                            "4 séries de 10 répétitions",
+                            "À la 9ᵉ répétition : bloque en haut 5 secondes, puis termine la 10ᵉ"
+                        ]
+                    },
+                    {
+                        id: 'hipthrust1',
+                        type: 'hipthrust',
+                        name: "2️⃣ Hip Thrust",
+                        details: [
+                            "8 répétitions normales",
+                            "8 petites répétitions en haut du mouvement",
+                            "Contracte bien les fessiers",
+                            "Dernière répétition : bloque en haut 8 secondes",
+                            "Augmente la charge progressivement"
+                        ]
+                    },
+                    {
+                        id: 'quadriceps',
+                        type: 'quadriceps',
+                        name: "3️⃣ Quadriceps",
+                        details: [
+                            "Position correcte (dos droit, genoux alignés)",
+                            "4 séries de 10 répétitions",
+                            "À la 9ᵉ répétition : bloque en haut 5 secondes + 1 répétition supplémentaire",
+                            "Enchaîne directement avec Squat Jump"
+                        ]
+                    },
+                    {
+                        id: 'squatjump',
+                        type: 'squatjump',
+                        name: "4️⃣ Squat Jump",
+                        details: [
+                            "10 répétitions",
+                            "Mouvement explosif",
+                            "Genoux légèrement fléchis à la descente",
+                            "Extension complète en saut",
+                            "Concentre-toi sur la puissance et la contraction"
+                        ]
+                    },
+                    {
+                        id: 'kickback',
+                        type: 'kickback',
+                        name: "5️⃣ Kick Back – Fessiers / Postérieur",
+                        details: [
+                            "Place un step au sol pour t’équilibrer",
+                            "Attache la poulie basse à ta cheville arrière",
+                            "Fléchis légèrement les genoux",
+                            "Penche-toi légèrement vers l’avant, dos droit",
+                            "Envoie la jambe en arrière et vers le haut",
+                            "Contracte fortement le fessier en haut",
+                            "Redescends sans poser complètement le pied",
+                            "10 répétitions"
+                        ]
+                    },
+                    {
+                        id: 'cardio1',
+                        type: 'cardio',
+                        name: "Cardio – Fin de séance",
+                        details: [
+                            "Escalier / Stepper à vitesse 7 pendant 15 minutes",
+                            "Objectif : perdre le mauvais gras et garder la congestion"
+                        ]
+                    }
+                ]
+            };
+
+            const jour2 = {
+                title: "JOUR 2 - Vendredi",
+                exercises: [
+                    {
+                        id: 'warmup2',
+                        type: 'warmup',
+                        name: "Échauffement – Cardio léger",
+                        details: ["Escalier / Stepper à vitesse 7 pendant 4 minutes", "Objectif : préparer les muscles et articulations"]
+                    },
+                    {
+                        id: 'stepup',
+                        type: 'stepup',
+                        name: "1️⃣ Step Up – Fessiers / Jambes",
+                        details: [
+                            "Place un step en bois ou banc solide",
+                            "Monte un pied sur le step, l’autre derrière",
+                            "Descends en fléchissant le genou avant vers l’avant",
+                            "Envoie le fessier vers l’arrière",
+                            "Remonte en contractant fortement le fessier",
+                            "Alterne les jambes à chaque répétition",
+                            "10 répétitions par jambe"
+                        ]
+                    },
+                    {
+                        id: 'hipthrust2',
+                        type: 'hipthrust',
+                        name: "2️⃣ Hip Thrust",
+                        details: [
+                            "8 répétitions normales",
+                            "8 petites répétitions en haut du mouvement",
+                            "Contracte bien les fessiers",
+                            "Dernière répétition : bloque en haut 8 secondes",
+                            "Augmente la charge progressivement"
+                        ]
+                    },
+                    {
+                        id: 'bulgare',
+                        type: 'bulgare',
+                        name: "3️⃣ Fentes Bulgare – Fessiers / Jambes",
+                        details: [
+                            "Commence assise sur le banc/step",
+                            "Fais un grand pas en avant",
+                            "Lève-toi : le mouvement commence",
+                            "Place le pied arrière sur le banc",
+                            "Penche légèrement le buste vers l’avant",
+                            "Genou arrière vers l’arrière, menton rentré, dos droit",
+                            "Les poids suivent le mouvement contre les cuisses",
+                            "Descends doucement, fessier bien engagé",
+                            "Remonte en contractant fortement",
+                            "10 répétitions par jambe"
+                        ]
+                    },
+                    {
+                        id: 'abductions2',
+                        type: 'abductions',
+                        name: "4️⃣ Abductions – Jambes / Fessiers",
+                        details: [
+                            "Place ton fessier bien vers l’arrière",
+                            "Penche-toi légèrement vers l’avant, dos droit",
+                            "4 séries de 10 répétitions",
+                            "À la 9ᵉ répétition : bloque en haut 5 secondes, puis termine la 10ᵉ"
+                        ]
+                    },
+                    {
+                        id: 'cardio2',
+                        type: 'cardio',
+                        name: "Cardio – Fin de séance",
+                        details: [
+                            "Escalier / Stepper à vitesse 7 pendant 15 minutes",
+                            "Objectif : perdre le mauvais gras et garder la congestion"
+                        ]
+                    }
+                ]
+            };
+
+            const renderDay = (day, dayData) => {
+                const isExpanded = expandedDay === day;
+                const dayExercises = dayData.exercises;
+                const completedCount = dayExercises.filter(ex =>
+                    completedExercises[`${day}-${ex.id}`]
+                ).length;
+
+                return (
+                    <div key={day} className="mb-6 bg-white rounded-xl shadow-lg overflow-hidden border border-purple-100">
+                        <button
+                            onClick={() => setExpandedDay(isExpanded ? null : day)}
+                            className="w-full p-6 flex items-center justify-between bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 transition-all shadow-md"
+                        >
+                            <div className="flex items-center gap-4">
+                                <h2 className="text-2xl font-bold tracking-wide">{dayData.title}</h2>
+                                <span className="bg-white/20 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-semibold border border-white/30">
+                                    {completedCount}/{dayExercises.length} terminés
+                                </span>
+                            </div>
+                            {isExpanded ? <IconChevronUp size={28} /> : <IconChevronDown size={28} />}
+                        </button>
+
+                        {isExpanded && (
+                            <div className="p-6 space-y-6 bg-gray-50/50">
+                                {dayExercises.map((exercise) => {
+                                    const isCompleted = completedExercises[`${day}-${exercise.id}`];
+                                    return (
+                                        <div
+                                            key={exercise.id}
+                                            className={`border-2 rounded-xl p-5 transition-all duration-300 shadow-sm hover:shadow-md ${
+                                                isCompleted
+                                                    ? 'border-green-400 bg-green-50/50'
+                                                    : 'border-white bg-white hover:border-purple-200'
+                                            }`}
+                                        >
+                                            <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
+                                                {/* Illustration du bonhomme */}
+                                                <div className="flex-shrink-0 p-3 bg-white rounded-lg border border-gray-100 shadow-inner">
+                                                    <ExerciseIllustration type={exercise.type} />
+                                                </div>
+                                                
+                                                <div className="flex-1 w-full">
+                                                    <div className="flex justify-between items-start mb-3">
+                                                        <h3 className={`text-xl font-bold ${isCompleted ? 'text-green-800' : 'text-gray-800'}`}>
+                                                            {exercise.name}
+                                                        </h3>
+                                                        <button
+                                                            onClick={() => toggleExercise(day, exercise.id)}
+                                                            className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-sm ${
+                                                                isCompleted
+                                                                    ? 'bg-green-500 text-white scale-110'
+                                                                    : 'bg-gray-100 text-gray-400 hover:bg-purple-100 hover:text-purple-600'
+                                                            }`}
+                                                        >
+                                                            <IconCheck size={24} />
+                                                        </button>
+                                                    </div>
+                                                    
+                                                    <ul className="space-y-2 bg-white/50 rounded-lg p-3">
+                                                        {exercise.details.map((detail, idx) => (
+                                                            <li key={idx} className="flex items-start gap-2 text-gray-700 text-sm md:text-base">
+                                                                <span className="text-purple-600 mt-1.5 min-w-[6px] h-[6px] rounded-full bg-purple-600 block"></span>
+                                                                <span>{detail}</span>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </div>
+                );
+            };
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 p-4 md:p-8 font-sans">
+                    <div className="max-w-4xl mx-auto">
+                        <div className="text-center mb-10">
+                            <h1 className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 mb-4 drop-shadow-sm">
+                                Programme Coaching
+                            </h1>
+                            <p className="text-gray-600 text-lg font-medium">Semaine d’entraînement - Fessiers & Jambes</p>
+                        </div>
+
+                        <div className="bg-yellow-50 border-l-4 border-yellow-400 rounded-r-xl p-6 mb-10 shadow-sm">
+                            <h3 className="font-bold text-yellow-800 mb-3 text-lg flex items-center gap-2">
+                                <span>⚠️</span> Consignes importantes :
+                            </h3>
+                            <ul className="space-y-2 text-yellow-900/90 font-medium">
+                                <li className="flex items-center gap-2">• 1 min 30 de repos entre chaque série</li>
+                                <li className="flex items-center gap-2">• Entraînement : Mardi et Vendredi (récupération musculaire)</li>
+                                <li className="flex items-center gap-2">• Ne fais pas trop de cardio : risque de perdre du muscle</li>
+                                <li className="flex items-center gap-2">• Finis toujours par le cardio sur ces séances</li>
+                            </ul>
+                        </div>
+
+                        <div className="space-y-8">
+                            {renderDay('jour1', jour1)}
+                            {renderDay('jour2', jour2)}
+                        </div>
+
+                        <div className="mt-12 text-center pb-8">
+                            <p className="text-gray-500 font-medium text-sm">
+                                💪 Bonne séance ! Reste motivée et écoute ton corps.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<CoachingSportif />);
+    </script>
+</body>
+</html>
